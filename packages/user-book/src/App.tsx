@@ -12,9 +12,9 @@ export const App: FC = () => {
   }
 
   return (
-    <div>
+    <>
       <AddUser onSubmitUser={onSubmitUser} />
       <UserList users={users} />
-    </div>
+    </>
   );
 }
