@@ -17,8 +17,10 @@ interface Props {
 
 export const ErrorModal: FC<Props> = ({ title, message, close, open }) => {
   const root = useRef<HTMLDivElement>(document.createElement("div"))
+  const haveBeenMount = useRef<boolean>(false);
 
   useEffect(() => {
+    haveBeenMount.current = true;
     document.body.appendChild(root.current)
 
     const onModalClose = (e: AnimationEvent) => {
@@ -26,13 +28,17 @@ export const ErrorModal: FC<Props> = ({ title, message, close, open }) => {
         root.current.remove()
       }
     }
-
     root.current.addEventListener("animationend", onModalClose, { once: true })
 
     return () => {
       root.current.removeEventListener("animationend", onModalClose)
     }
-  }, [ open ])
+  }, [ open ]);
+
+
+  if (!open && !haveBeenMount.current) {
+    return null;
+  }
 
   return createPortal((
     <>
