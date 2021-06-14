@@ -78,7 +78,7 @@ export const AddUser: FC<Props> = ({ onSubmitUser }) => {
           </Button>
         </form>
       </Card>
-      { isError && <ErrorModal title={errorTitle} message={errorMessage} close={() => setError(false)} /> }
+      <ErrorModal open={isError} title={errorTitle} message={errorMessage} close={() => setError(false)} />
     </>
   )
 }

@@ -17,6 +17,14 @@
     overflow: hidden;
 }
 
+.open {
+    animation: show-modal-animation 200ms ease-in-out;
+}
+
+.close {
+    animation: hide-modal-animation 200ms ease-in-out;
+}
+
 .header {
     background: #4f005f;
     padding: 1rem;
@@ -41,5 +49,29 @@
     .modal {
         left: calc(50% - 20rem);
         width: 40rem;
+    }
+}
+
+
+@keyframes show-modal-animation {
+    from {
+        transform: translateY(10%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0%);
+        opacity: 1;
+    }
+}
+
+
+@keyframes hide-modal-animation {
+    from {
+        transform: translateY(0%);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(10%);
+        opacity: 0;
     }
 }
