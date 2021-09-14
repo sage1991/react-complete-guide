@@ -1,22 +1,20 @@
-import React, { FC, MouseEvent } from "react"
+import React, { FC, MouseEvent, useContext } from "react"
+import { AuthContext } from "../../context"
 import classes from "./Navigation.module.css"
 
 
-interface NavigationProps {
-  loggedIn: boolean
-  logout: () => void
-}
+export const Navigation: FC = (props) => {
+  const auth = useContext(AuthContext)
 
-export const Navigation: FC<NavigationProps> = (props) => {
   return (
     <nav className={classes.nav}>
       <ul>
         {
-          props.loggedIn &&
+          auth.loggedIn &&
           <>
             <NavLink href="/">Users</NavLink>
             <NavLink href="/">Admin</NavLink>
-            <NavButton onClick={props.logout}>Logout</NavButton>
+            <NavButton onClick={auth.logout}>Logout</NavButton>
           </>
         }
       </ul>

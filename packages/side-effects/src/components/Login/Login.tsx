@@ -1,55 +1,73 @@
-import React, { ChangeEvent, FC, FormEvent, useState } from "react"
+import React, { ChangeEvent, FC, FormEvent, useContext, useEffect, useReducer, useRef } from "react"
+import { LOGIN_FORM_INITIAL_STATE, loginFormReducer } from "./reducer"
 import { Card } from "../UI/Card"
 import { Button } from "../UI/Button"
+import { throttle } from "../../utils"
+import { AuthContext } from "../../context"
 import classes from "./Login.module.css"
+import { Input } from "../UI/Input"
 
 
-interface Props {
-  login: (email: string, password: string) => void
-}
+export const Login: FC = (props) => {
+  const auth = useContext(AuthContext)
+  const [ { email, password, valid }, dispatch ] = useReducer(loginFormReducer, LOGIN_FORM_INITIAL_STATE)
+  const emailRef = useRef<HTMLInputElement>(null)
+  const passwordRef = useRef<HTMLInputElement>(null)
 
-export const Login: FC<Props> = (props) => {
-  const [ email, setEmail ] = useState<string>("")
-  const [ isValidEmail, setIsValidEmail ] = useState<boolean>(true)
-  const [ password, setPassword ] = useState<string>("")
-  const [ isValidPassword, setIsValidPassword ] = useState<boolean>(true)
-  const [ isValidForm, setIsValidForm ] = useState<boolean>(false)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      dispatch({ type: "VALIDATE_FORM" })
+    }, 500)
+    return () => {
+      clearTimeout(timer)
+    }
+  } , [ password.value, email.value ])
 
-  const onLoginFormSubmit = (e: FormEvent) => {
+  const onLoginFormSubmit = throttle((e: FormEvent) => {
     e.preventDefault()
-    props.login(email, password)
+    if (valid) {
+      auth.login(email.value, password.value)
+    } else if (!email.valid) {
+      emailRef.current && emailRef.current.focus()
+    } else if (!password.valid) {
+      passwordRef.current && passwordRef.current.focus()
+    } else {
+      emailRef.current && emailRef.current.focus()
+    }
+  }, 1000)
+
+  const onEmailChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+    dispatch({ type: "EMAIL_ENTER", payload: value.trim() })
   }
 
-  const onEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
-    let { value } = e.target
-    value = value.trim()
-    setEmail(value)
-    setIsValidForm(validatePassword(password) && validateEmail(value))
+  const onPasswordChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+    dispatch({ type: "PASSWORD_ENTER", payload: value.trim() })
   }
 
-  const onPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-    let { value } = e.target
-    value = value.trim()
-    setPassword(value)
-    setIsValidForm(validateEmail(email) && validatePassword(value))
-  }
-
-  const onEmailBlur = () => setIsValidEmail(validateEmail(email))
-  const onPasswordBlur = () => setIsValidPassword(validatePassword(password))
+  const onEmailBlur = () => dispatch({ type: "EMAIL_BLUR" })
+  const onPasswordBlur = () => dispatch({ type: "PASSWORD_BLUR" })
 
   return (
     <Card className={classes.login}>
       <form onSubmit={onLoginFormSubmit}>
-        <div className={`${classes.control} ${isValidEmail ? "" : classes.invalid}`}>
-          <label htmlFor="email">E-Mail</label>
-          <input id="email" type="email" value={email} onChange={onEmailChange} onBlur={onEmailBlur} />
-        </div>
-        <div className={`${classes.control} ${isValidPassword ? "" : classes.invalid}`}>
-          <label htmlFor="password">Password</label>
-          <input id="password" type="password" value={password} onChange={onPasswordChange} onBlur={onPasswordBlur} />
-        </div>
+        <Input ref={emailRef}
+               label="E-Mail"
+               id="email"
+               type="email"
+               value={email.value}
+               valid={email.valid}
+               onChange={onEmailChange}
+               onBlur={onEmailBlur} />
+        <Input ref={passwordRef}
+               label="Password"
+               id="password"
+               type="password"
+               value={password.value}
+               valid={password.valid}
+               onChange={onPasswordChange}
+               onBlur={onPasswordBlur} />
         <div className={classes.actions}>
-          <Button type="submit" disabled={!isValidForm}>
+          <Button type="submit">
             Login
           </Button>
         </div>
@@ -57,8 +75,3 @@ export const Login: FC<Props> = (props) => {
     </Card>
   )
 }
-
-
-const EMAIL_REGEX = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i
-const validateEmail = (value: string) => EMAIL_REGEX.test(value)
-const validatePassword = (value: string) => value.length > 6

@@ -2,6 +2,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import { App } from './App';
 import reportWebVitals from './reportWebVitals';
+import { AuthContextProvider } from "./context"
 import './index.css';
 
 
@@ -9,7 +10,9 @@ const root = document.querySelector<HTMLDivElement>("#root");
 
 render(
   <React.StrictMode>
-    <App />
+    <AuthContextProvider>
+      <App />
+    </AuthContextProvider>
   </React.StrictMode>,
   root
 );

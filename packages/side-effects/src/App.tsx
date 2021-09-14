@@ -1,21 +1,19 @@
-import React, { FC, useState } from 'react'
+import React, { FC, useContext } from 'react'
 import { Login } from "./components/Login"
 import { Home } from "./components/Home"
 import { MainHeader } from "./components/MainHeader"
+import { AuthContext } from "./context"
 
 
 export const App: FC = () => {
-  const [ loggedIn, setLoggedIn ] = useState<boolean>(false)
-
-  const login = (email: string, password: string) => setLoggedIn(true)
-  const logout = () => setLoggedIn(false)
+  const auth = useContext(AuthContext)
 
   return (
     <>
-      <MainHeader loggedIn={loggedIn} logout={logout} />
+      <MainHeader />
       <main>
-        { !loggedIn && <Login login={login} /> }
-        { loggedIn && <Home logout={logout} /> }
+        { !auth.loggedIn && <Login /> }
+        { auth.loggedIn && <Home /> }
       </main>
     </>
   )
