@@ -1,13 +1,15 @@
 import React, { FC } from "react"
 import { Card } from "../UI"
-import classes from "./AvailableMeals.module.css"
 import { MealItem } from "./MealItem"
+import { MealItemModel } from "../../model"
+import classes from "./AvailableMeals.module.css"
 
 
 export const AvailableMeals: FC = () => {
   const meals = DUMMY_MEALS.map((meal) => {
     return (
       <MealItem key={meal.id}
+                id={meal.id}
                 name={meal.name}
                 description={meal.description}
                 price={meal.price} />
@@ -23,7 +25,7 @@ export const AvailableMeals: FC = () => {
   )
 }
 
-const DUMMY_MEALS: any[] = [
+const DUMMY_MEALS: MealItemModel[] = [
   {
     id: 'm1',
     name: 'Sushi',

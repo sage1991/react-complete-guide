@@ -1,15 +1,26 @@
 import React, { FC } from "react"
-import classes from "./MealItem.module.css"
 import { MealItemForm } from "./MealItemForm"
+import { useCart } from "../../../store/cart"
+import classes from "./MealItem.module.css"
 
 
 interface Props {
+  id: string
   name: string
   description: string
   price: number
 }
 
 export const MealItem: FC<Props> = (props) => {
+  const cart = useCart()
+
+  const addToCart = (amount: number) => cart.addItem({
+    id: props.id,
+    name: props.name,
+    price: props.price,
+    amount: amount
+  })
+
   return (
     <li className={classes.meal}>
       <div>
@@ -18,7 +29,7 @@ export const MealItem: FC<Props> = (props) => {
         <div className={classes.price}>{ `$${props.price.toFixed(2)}` }</div>
       </div>
       <div>
-        <MealItemForm />
+        <MealItemForm id={props.id} addToCart={addToCart} />
       </div>
     </li>
   )

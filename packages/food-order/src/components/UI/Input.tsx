@@ -1,4 +1,4 @@
-import React, { FC, InputHTMLAttributes } from "react"
+import React, { InputHTMLAttributes } from "react"
 import styled from "styled-components"
 
 
@@ -26,11 +26,11 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
   label: string
 }
 
-export const Input: FC<Props> = ({ label, ...inputProps }) => {
+export const Input = React.forwardRef<HTMLInputElement, Props>(({ label, ...inputProps }, ref) => {
   return (
     <InputContainer>
       <label htmlFor={inputProps.id}>{ label }</label>
-      <input {...inputProps} />
+      <input ref={ref} {...inputProps} />
     </InputContainer>
   )
-}
+})
