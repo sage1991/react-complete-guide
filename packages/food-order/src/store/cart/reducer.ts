@@ -2,7 +2,7 @@ import { Reducer } from "react"
 import { CartItemModel } from "../../model"
 
 
-type CartAction = AddCartItemAction | RemoveCartItemAction | ChangeCartItemAmountAction
+type CartAction = AddCartItemAction | RemoveCartItemAction | ChangeCartItemAmountAction | ClearCartAction
 
 interface AddCartItemAction {
   type: "ADD_CART_ITEM"
@@ -22,6 +22,10 @@ interface ChangeCartItemAmountAction {
   }
 }
 
+interface ClearCartAction {
+  type: "CLEAR_CART"
+}
+
 export const cartReducer: Reducer<CartItemModel[], CartAction> = (state, action) => {
   switch (action.type) {
     case "ADD_CART_ITEM":
@@ -38,6 +42,8 @@ export const cartReducer: Reducer<CartItemModel[], CartAction> = (state, action)
         }
         return item
       })
+    case "CLEAR_CART":
+      return []
     default:
       return state
   }

@@ -8,6 +8,7 @@ export interface Cart {
   totalAmount: number
   addItem: (item: CartItemModel) => void
   removeItem: (id: string) => void
+  clear: () => void
 }
 
 // @ts-ignore
@@ -37,8 +38,10 @@ export const CartProvider: FC = ({ children }) => {
     }
   }
 
+  const clear = () => dispatch({ type: "CLEAR_CART" })
+
   return (
-    <CartContext.Provider value={{ items, totalAmount, addItem, removeItem }}>
+    <CartContext.Provider value={{ items, totalAmount, addItem, removeItem, clear }}>
       { children }
     </CartContext.Provider>
   )

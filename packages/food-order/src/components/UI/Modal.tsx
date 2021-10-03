@@ -3,8 +3,9 @@ import styled, { css, keyframes } from "styled-components"
 import { createPortal } from "react-dom"
 
 
-interface ModalProps {
+export interface ModalProps {
   show: boolean
+  onBackdropClick?: (e: React.MouseEvent<HTMLDivElement>) => void
 }
 
 export const Modal: FC<ModalProps> = (props) => {
@@ -14,18 +15,27 @@ export const Modal: FC<ModalProps> = (props) => {
     if (!props.show) return
 
     document.body.appendChild(root)
-    return () => root.remove()
+
+    return () => {
+      const onAnimationEnd = (e: AnimationEvent) => {
+        if (e.animationName === fadeOut.getName()) {
+          root.remove()
+          root.removeEventListener("animationend", onAnimationEnd)
+        }
+      }
+      root.addEventListener("animationend", onAnimationEnd)
+    }
   }, [ root, props.show ])
 
   return (
     <>
-      { createPortal(<Backdrop />, root) }
+      { createPortal(<Backdrop onClick={props.onBackdropClick} show={props.show} />, root) }
       { createPortal(<ModalOverlay show={props.show}>{ props.children }</ModalOverlay>, root) }
     </>
   )
 }
 
-const Backdrop = styled.div`
+const Backdrop = styled.div<ModalProps>`
   position: fixed;
   top: 0;
   left: 0;
@@ -33,19 +43,22 @@ const Backdrop = styled.div`
   height: 100vh;
   z-index: 20;
   background-color: rgba(0, 0, 0, 0.75);
+  ${props => css`animation: ${props.show ? fadeIn : fadeOut} 200ms ease-out forwards;`}
 `
 
 const ModalOverlay = styled.div<ModalProps>`
   position: fixed;
-  top: 20vh;
+  top: 15vh;
   left: 5%;
   width: 90%;
+  max-height: 70vh;
   background-color: white;
+  overflow: scroll;
   padding: 1rem;
   border-radius: 14px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   z-index: 30;
-  ${props => props.show && css`animation: ${slideDown} 300ms ease-out forwards;`} 
+  ${props => css`animation: ${props.show ? fadeIn : fadeOut} 200ms ease-out forwards;`}
   
   @media (min-width: 768px) {
     width: 40rem;
@@ -53,13 +66,20 @@ const ModalOverlay = styled.div<ModalProps>`
   }
 `
 
-const slideDown = keyframes`
+const fadeIn = keyframes`
   from {
     opacity: 0;
-    transform: translateY(-3rem);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+  }
+`
+
+const fadeOut = keyframes`
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 `

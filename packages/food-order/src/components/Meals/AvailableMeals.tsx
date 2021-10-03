@@ -1,12 +1,50 @@
-import React, { FC } from "react"
+import React, { FC, useEffect, useState } from "react"
 import { Card } from "../UI"
 import { MealItem } from "./MealItem"
-import { MealItemModel } from "../../model"
+import { MealModel } from "../../model"
+import { useApi } from "../../hooks/useApi"
+import { fetchMeals } from "../../api/meals"
 import classes from "./AvailableMeals.module.css"
 
 
 export const AvailableMeals: FC = () => {
-  const meals = DUMMY_MEALS.map((meal) => {
+  const [ meals, setMeals ] = useState<MealModel[]>([])
+
+  const api = useApi(fetchMeals)
+  useEffect(() => {
+    api
+      .request()
+      .then(response => {
+        const __meals = Object.entries(response).map<MealModel>(([ key, value ]) => {
+          return {
+            id: key,
+            name: value.name,
+            description: value.description,
+            price: value.price
+          }
+        })
+        setMeals(__meals)
+      })
+  }, [ api.request ])
+
+
+  if (api.loading) {
+    return (
+      <section className={classes["meals-loading"]}>
+        <p>Loading...</p>
+      </section>
+    )
+  }
+
+  if (api.error) {
+    return (
+      <section className={classes["meals-error"]}>
+        <p>{ api.error }</p>
+      </section>
+    )
+  }
+
+  const mealItems = meals.map((meal) => {
     return (
       <MealItem key={meal.id}
                 id={meal.id}
@@ -19,35 +57,8 @@ export const AvailableMeals: FC = () => {
   return (
     <section className={classes.meals}>
       <Card>
-        <ul>{ meals }</ul>
+        <ul>{ mealItems }</ul>
       </Card>
     </section>
   )
 }
-
-const DUMMY_MEALS: MealItemModel[] = [
-  {
-    id: 'm1',
-    name: 'Sushi',
-    description: 'Finest fish and veggies',
-    price: 22.99,
-  },
-  {
-    id: 'm2',
-    name: 'Schnitzel',
-    description: 'A german specialty!',
-    price: 16.5,
-  },
-  {
-    id: 'm3',
-    name: 'Barbecue Burger',
-    description: 'American, raw, meaty',
-    price: 12.99,
-  },
-  {
-    id: 'm4',
-    name: 'Green Bowl',
-    description: 'Healthy...and green...',
-    price: 18.99,
-  },
-];
