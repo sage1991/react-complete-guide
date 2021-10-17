@@ -16,6 +16,13 @@ export const App: FC = (props) => {
 
   useEffect(() => {
     dispatch(fetchCart())
+      .unwrap()
+      .then(value => {
+        console.log(value)
+      })
+      .catch(error => {
+        console.log(error)
+      })
   }, [])
 
   useEffect(() => {
@@ -25,6 +32,13 @@ export const App: FC = (props) => {
     }
 
     dispatch(updateCart(items))
+      .unwrap()
+      .then(value => {
+        console.log(value)
+      })
+      .catch(error => {
+        console.log(error)
+      })
   }, [ items, dispatch ])
 
   return (

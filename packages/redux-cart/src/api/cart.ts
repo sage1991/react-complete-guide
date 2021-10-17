@@ -1,7 +1,7 @@
 import { CartItemModel } from "../model"
 
 
-export const updateCart = (carts: CartItemModel[]) => {
+export const updateCart = (carts: CartItemModel[]): Promise<CartItemModel[]> => {
   return (
     fetch("https://react-burger-c56a9.firebaseio.com/cart.json", {
       method: "put",
