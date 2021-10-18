@@ -9,8 +9,9 @@ export const removeItem = createAction<string>("cart/removeItem")
 
 export const updateCart = createAsyncThunk<CartItemModel[], CartItemModel[]>("cart/updateCart", (arg, thunkAPI) => {
   return api.updateCart(arg)
-});
+})
 
 export const fetchCart = createAsyncThunk<CartItemModel[]>("cart/fetchCart", () => {
   return api.fetchCart()
 })
+
